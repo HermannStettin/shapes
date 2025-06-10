@@ -51,6 +51,20 @@ PARAMS_CONFIG = {
             "dest": "full_eval_mode",
         },
     },
+    "optim_params": {
+        "--lr": {
+            "type": float,
+            "default": 0.001,
+            "help": "Learning rate.",
+            "dest": "lr"
+        },
+        "--optim": {
+            "type": str,
+            "default": "adamw",
+            "help": "Optimizer type: 'sgd' or 'adamw'.",
+            "dest": "optim",
+        },
+    },
     "wandb_params": {
         "--use-wandb": {
             "action": "store_true",
