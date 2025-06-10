@@ -26,11 +26,11 @@ def launch(
 ):
     wandb_flag = wandb_params["wandb_flag"]
     if wandb_flag:
-        wandb.log(key = wandb_params["wandb_key"])
+        wandb.login(key = wandb_params["wandb_key"])
 
         # In case of id != None we'll resume run logging in wandb
         wandb.init(
-            project = wandb_params["project_name"],
+            project = wandb_params["wandb_project"],
             id = wandb_params["run_id"],
             resume = "allow"
         )
