@@ -7,7 +7,7 @@ from utils import (
     set_up_env,
     get_optimizer,
     load_checkpoint,
-    save_checkpoint
+    save_checkpoint,
     )
 from data import get_train_val_test_data
 from models import ResNet
@@ -58,10 +58,16 @@ def launch(
         num_classes = 8,
         # "IMAGENET1K_V1"
         weights = model_params["weights"]
-    )
+    ).to(device)
 
     print(model)
 
+    optimizer = get_optimizer(
+        model = model,
+        optim = optim_params["optim"],
+        lr = optim_params["lr"],
+    )
+    
     resume = trainer_params["resume"]
     iter_init = load_checkpoint(
         trainer_params["checkpoint_path"],
@@ -74,10 +80,12 @@ def launch(
         loss_val, acc_val, f1_val = validate(
             model,
             val_data,
+            device,
         )
         loss_test, acc_test, f1_test = validate(
             model,
             test_data,
+            device,
         )
 
         print(f"Val: Average loss: {loss_val:.6f}, Accuracy: {acc_val:.2f}%, F1-Score {f1_val:.2f}\n")
@@ -85,18 +93,13 @@ def launch(
         
         return
 
-    optimizer = get_optimizer(
-        model = model,
-        optim = optim_params["optim"],
-        lr = optim_params["lr"],
-    )
-
     best_val_loss = None
     epochs = trainer_params["epochs"]
-    for epoch in tqdm.tqdm(range(iter_init, epochs)):
-        train_epoch_loss, train_epoch_accuracy = train(model, optimizer, train_data)
+    for epoch in range(iter_init, epochs):
+        print(f"=================== EPOCHS {epoch} ======================")
+        train_epoch_loss, train_epoch_accuracy = train(model, optimizer, train_data, device)
         
-        val_epoch_loss, val_epoch_accuracy, val_epoch_f1 = validate(model, val_data)
+        val_epoch_loss, val_epoch_accuracy, val_epoch_f1 = validate(model, val_data, device)
 
         if wandb_flag:
             wandb.log({
