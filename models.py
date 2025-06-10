@@ -8,7 +8,9 @@ class ResNet(nn.Module):
         if weights:
             self.resnet = models.resnet18(weights = weights)
             
-            for param in list(self.resnet.parameters()):
+            # the number of freezed parameters is pure heuristic
+            # and was choosen based on the experiments
+            for param in list(self.resnet.parameters())[:-15]:
                 param.requires_grad = False
             
         self.resnet.fc = nn.Sequential(
